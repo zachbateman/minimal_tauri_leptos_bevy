@@ -1,0 +1,6 @@
+/dist/
+/target/
+/Cargo.lock
+.vscode/
+public/
+src-tauri/icons/

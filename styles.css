@@ -1,0 +1,51 @@
+/* ----- FOUNDATIONAL DISPLAY SETUP ----- */
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Hide scrollbars (vertical and horizontal) */
+::-webkit-scrollbar { width: 0px; height: 0px;}
+
+body {
+  position: relative;
+  margin: 0px;
+  height: 100%;
+  width: 100%;
+  background-color: #333;
+}
+
+#bevy_canvas {
+  background-color: #888;
+  position: absolute;
+}
+
+#leptos_div {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+}
+
+.leptos_container {
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+}
+.leptos_container * {
+  pointer-events: auto;
+}
+
+/* ----- END OF FOUNDATIONAL DISPLAY SETUP ----- */
+
+
+.ui_box {
+  height: 150px;
+  width: 400px;
+  border: 1px solid #345;
+  box-shadow: 0px 0px 8px 1px #333, inset 0px 0px 4px 0px #555;
+  background-color: #c0d2d6;
+  border-radius: 10px;
+  margin: 30px;
+}

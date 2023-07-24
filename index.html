@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tauri + Yew App</title>
+    <link data-trunk rel="css" href="styles.css" />
+    <link data-trunk rel="copy-file" href="splashscreen.html" />
+  </head>
+  <script type="text/javascript" defer>
+  </script>
+  <body>
+    <canvas id="bevy_canvas"></canvas>
+    <div id="leptos_div"></div>
+  </body>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        window.__TAURI__.invoke('close_splashscreen')
+      }, 1500)
+    })
+  </script>
+</html>
