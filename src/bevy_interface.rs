@@ -1,10 +1,9 @@
 use rand::Rng;
-// use futures_lite::future;
 use bevy::prelude::*;
-// use bevy::tasks::{AsyncComputeTaskPool, TaskPool, Task};
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
+// use wasm_bindgen::JsValue;
 
-use crate::{invoke_no_args, invoke_with_args};
+// use crate::invoke;
 
 
 
@@ -13,38 +12,40 @@ pub struct BevyInterfacePlugin;
 impl Plugin for BevyInterfacePlugin {
     fn build(&self, app: &mut App) {
             app.add_plugins(PanOrbitCameraPlugin)
-
-            // .insert_resource(AsyncTaskPool(*AsyncComputeTaskPool::init(TaskPool::new)))
-
             .add_systems(Startup, setup)
             .add_systems(Update, add_cube_system);
-
             // .add_systems(PostUpdate, tauri_listener);
     }
 }
 
 
-// #[derive(Resource)]
-// struct AsyncTaskPool(AsyncComputeTaskPool);
 
+// How in the world can this work?.....
+// Big issue with "invoke" (Tauri command call) being async and "JsValue" not being Send or something
+// and not passing cleanly between Bevy and Tauri.
+//
+// Think cleanest approach would be to have a Bevy system/function continually
+// check Tauri state for updates and then signal to other Bevy systems to handle
+// those updates as needed.
+// WHAT IS POSSIBLE HERE???
+// fn tauri_listener(
+//     commands: &mut Commands,
+// ) {
+//     todo!();
+    
+//     // Something like the below would be ideal.
+//     // If could get the value from the invoke/Tauri command,
+//     // could use in Bevy as a new component/entity to query for
+//     // or perhaps with Bevy signals?
+
+//     // let args = JsValue::NULL;  // not using args, but have to pass in something to invoke ?
+//     // let latest_box_count = invoke("check_box_count", args).await;
+//     // .....now use latest_box_count within Bevy.....
+//     // commands.spawn(TauriBoxCount(latest_box_count));  <-- This may work with query in other systems?
+// }
 
 // #[derive(Component)]
-// struct BoxCount(Task<u32>);
-
-
-// fn tauri_listener(
-//     mut commands: Commands,
-//     mut task_pool: Res<AsyncTaskPool>,
-// ) {
-//     let thread_pool = AsyncComputeTaskPool::get();
-
-//     let count = thread_pool.spawn_local(async {
-//         let box_count = invoke_no_args("check_box_count").await.as_f64().unwrap() as u32;
-//         box_count
-//     });
-
-//     commands.spawn(BoxCount(count));
-// }
+// struct TauriBoxCount(u32);
 
 
 
@@ -52,19 +53,19 @@ impl Plugin for BevyInterfacePlugin {
 struct BevyBox;
 
 
-// set up a simple 3D scene
+// Set up a simple 3D scene
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    // plane
+    // Plane
     commands.spawn(PbrBundle {
         mesh: meshes.add(shape::Plane::from_size(5.0).into()),
         material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
         ..default()
     });
-    // cube
+    // Cube
     commands.spawn((PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
         material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
@@ -72,7 +73,7 @@ fn setup(
         ..default()
     },
     BevyBox));
-    // light
+    // Light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
             intensity: 1500.0,
@@ -82,7 +83,7 @@ fn setup(
         transform: Transform::from_xyz(4.0, 8.0, 4.0),
         ..default()
     });
-    // camera
+    // Camera
     commands.spawn((
         Camera3dBundle {
             transform:  Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
@@ -93,13 +94,13 @@ fn setup(
 }
 
 
-
+// Add additional cubes... ideally based on state contained in Tauri side
 fn add_cube_system(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     // query: Query<&Transform, With<BevyBox>>,
-    // target_box_count_query: Query<&BoxCount>,
+    // mut tauri_query: Query<(Entity, &mut TauriBoxCount)>,
 ) {
     // Spawn a second box after some random delay
     let mut rng = rand::thread_rng();
@@ -127,15 +128,9 @@ fn add_cube_system(
         ));
     }
 
-
-    // // HOW IN THE WORLD CAN WE COMMUNICATE WITH TAURI?
-    // // Figure out if need to add new boxes and add them if needed
-    // let target_box_count_task = &target_box_count_query.iter().next().unwrap().0;
-
-    // if target_box_count_task.is_finished() {
-    //     let target_box_count: u32 = future::block_on(future::poll_once(*target_box_count_task)).unwrap();
-    
-    //     if target_box_count > existing_box_count {
+    // let box_count: u32 = query.into_iter().map(|_| {1}).sum();
+    // for (entity, new_box_count) in &mut tauri_query {
+    //     if box_count < new_box_count.0 {
     //         commands.spawn((PbrBundle {
     //             mesh: meshes.add(Mesh::from(shape::Cube { size: 0.3 })),
     //             material: materials.add(Color::rgb(0.8, 0.7, 1.0).into()),
@@ -145,5 +140,7 @@ fn add_cube_system(
     //             BevyBox,
     //         ));
     //     }
+    //     commands.entity(entity).despawn();
     // }
+
 }

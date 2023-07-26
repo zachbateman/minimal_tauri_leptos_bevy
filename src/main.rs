@@ -1,6 +1,7 @@
 
-use bevy::prelude::*;
 use leptos::*;
+use bevy::prelude::*;
+
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue, JsCast};
 
 mod leptos_interface;
@@ -11,19 +12,17 @@ use bevy_interface::BevyInterfacePlugin;
 
 
 
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
-    async fn invoke_with_args(cmd: &str, args: JsValue) -> JsValue;
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
-    async fn invoke_no_args(cmd: &str) -> JsValue;
+    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
 }
 
 
 
 
 fn main() {
-
     // Launch Leptos
     let mount_point = document().query_selector("#leptos_div").unwrap().unwrap();
     mount_to(mount_point.unchecked_into(), |cx| {
@@ -32,9 +31,7 @@ fn main() {
         }
     });
 
-
     // Launch Bevy
-    // let bevy_handler = comms::BevyEventHandler { communicator: Arc::new(Mutex::new(bevy_event_handler)) };
     bevy::app::App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {

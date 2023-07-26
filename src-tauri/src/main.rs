@@ -20,7 +20,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             close_splashscreen,
             add_box,
-            check_box_count,
+            // check_box_count,
         ])
 
         .run(tauri::generate_context!())
@@ -45,8 +45,12 @@ async fn add_box(new: bool, box_count: State<'_, NewBoxCount>) -> Result<(), ()>
 }
 
 
-#[tauri::command]
-async fn check_box_count(box_count: State<'_, NewBoxCount>) -> Result<u32, ()> {
-    let count = box_count.count.lock().unwrap();
-    Ok(*count)
-}
+// #[tauri::command]
+// async fn check_box_count(noargs: bool, box_count: State<'_, NewBoxCount>) -> Result<u32, ()> {
+// // async fn check_box_count(box_count: State<'_, NewBoxCount>) -> Result<u32, ()> {
+// // fn check_box_count(box_count: State<'_, NewBoxCount>) -> u32 {
+//     let count = box_count.count.lock().unwrap();
+//     println!("Current Box Count (Checking): {}", &count);
+//     Ok(*count)
+//     // *count
+// }

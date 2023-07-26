@@ -3,7 +3,8 @@ use leptos::*;
 use leptos::leptos_dom::ev::MouseEvent;
 use serde_wasm_bindgen::to_value;
 
-use crate::{invoke_no_args, invoke_with_args};
+// use crate::{invoke, invoke_no_args, invoke_with_args};
+use crate::invoke;
 
 
 #[derive(Serialize)]
@@ -25,7 +26,7 @@ fn UiBox(cx: Scope) -> impl IntoView {
         // Fire off Tauri command that will update Tauri global state
         spawn_local(async move {
             let args = to_value(&NewBoxArgs { new: &true }).unwrap();
-            invoke_with_args("add_box", args).await;
+            invoke("add_box", args).await;
         });
     };
 
@@ -34,7 +35,7 @@ fn UiBox(cx: Scope) -> impl IntoView {
         <div class="ui_box">
             <p>"Minimal Tauri + Leptos + Bevy Example."</p>
             <p>{count}</p>
-            <button on:click=add_box>{"Add One Box"}</button>
+            <button on:click=add_box>"Add One Box"</button>
         </div>
     }
 }
