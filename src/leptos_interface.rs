@@ -2,16 +2,18 @@ use serde::Serialize;
 use leptos::*;
 use leptos::leptos_dom::ev::MouseEvent;
 use serde_wasm_bindgen::to_value;
+use wasm_bindgen::JsValue;
 
-// use crate::{invoke, invoke_no_args, invoke_with_args};
 use crate::invoke;
 
 
+/// Use this to run "invoke" without args.
+/// (Have to have some sort of args for how "invoke" is brought in as a Rust function.)
 #[derive(Serialize)]
-struct NewBoxArgs<'a> {
-    new: &'a bool,
+struct NoArgs;
+fn no_args() -> JsValue {
+    to_value(&NoArgs).unwrap()
 }
-
 
 #[component]
 fn UiBox(cx: Scope) -> impl IntoView {
@@ -25,8 +27,7 @@ fn UiBox(cx: Scope) -> impl IntoView {
 
         // Fire off Tauri command that will update Tauri global state
         spawn_local(async move {
-            let args = to_value(&NewBoxArgs { new: &true }).unwrap();
-            invoke("add_box", args).await;
+            invoke("add_box", no_args()).await;
         });
     };
 

@@ -38,7 +38,7 @@ async fn close_splashscreen(window: tauri::Window) {
 
 
 #[tauri::command]
-async fn add_box(new: bool, box_count: State<'_, NewBoxCount>) -> Result<(), ()> {
+async fn add_box(box_count: State<'_, NewBoxCount>) -> Result<(), ()> {
     let mut count = box_count.count.lock().unwrap();
     *count += 1;
     Ok(())
