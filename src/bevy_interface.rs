@@ -5,20 +5,48 @@ use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 
 // use crate::invoke;
 
-
+use url::Url;
+// use tungstenite::{connect, Message};
+use tungstenite::connect;
 
 
 pub struct BevyInterfacePlugin;
 impl Plugin for BevyInterfacePlugin {
     fn build(&self, app: &mut App) {
             app.add_plugins(PanOrbitCameraPlugin)
+            .add_systems(Startup, server_listener)
             .add_systems(Startup, setup)
             .add_systems(Update, add_cube_system);
             // .add_systems(PostUpdate, tauri_listener);
     }
 }
 
+fn server_listener(
 
+) {
+    info!("In server_listener");
+    // let url = Url::parse("ws://localhost:8080").unwrap();
+    let url = Url::parse("ws://127.0.0.1:8080").unwrap();
+    let (mut socket, response) = connect(url).expect("Can't connect.......");
+
+    // let _ = socket.send(Message::Text(r#"{
+    //     "action": "authenticate",
+    //     "data": {
+    //         "key_id": "API-KEY",
+    //         "secret_key": "SECRET-KEY"
+    //     }
+    // }"#.into()));
+
+    // let _ = socket.send(Message::Text(r#"{
+    //     "action": "listen",
+    //     "data": {
+    //         "streams": ["AM.SPY"]
+    //     }
+    // }"#.into()));
+
+    // let msg = socket.read().expect("Error reading message");
+    // println!("Received: {}", msg);
+}
 
 // How in the world can this work?.....
 // Big issue with "invoke" (Tauri command call) being async and "JsValue" not being Send or something
